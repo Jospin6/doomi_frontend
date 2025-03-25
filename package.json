@@ -9,8 +9,12 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@radix-ui/react-avatar": "^1.1.3",
+    "@radix-ui/react-label": "^2.1.2",
+    "@radix-ui/react-radio-group": "^1.2.3",
     "@radix-ui/react-slot": "^1.1.2",
     "@reduxjs/toolkit": "^2.6.1",
+    "axios": "^1.8.4",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "embla-carousel-react": "^8.5.2",
@@ -21,6 +25,7 @@
     "react-icons": "^5.5.0",
     "react-redux": "^9.2.0",
     "react-resizable-panels": "^2.1.7",
+    "react-select": "^5.10.1",
     "shadcn": "^2.4.0-canary.15",
     "tailwind-merge": "^3.0.2",
     "tw-animate-css": "^1.2.4"
