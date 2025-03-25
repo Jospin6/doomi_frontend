@@ -1,6 +1,6 @@
 "use client"
-import { City } from "@/helpers/types";
-import { fetchCities, setSelectedCity } from "@/redux/cities/citySlice";
+import { City, DbCity } from "@/helpers/types";
+import { fetchCities, fetchDbCities, setSelectedCity, selectDbCity, setDbCity } from "@/redux/cities/citySlice";
 import { AppDispatch, RootState } from "@/redux/store";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -8,25 +8,23 @@ import { useDispatch, useSelector } from "react-redux";
 import Select from 'react-select'
 
 export default function Location() {
-    const dispatch = useDispatch<AppDispatch>();
-    const selectedCity = useSelector((state: RootState) => state.city.selectedCity); // Récupération de la ville sélectionnée depuis Redux
-    const cities = useSelector((state: RootState) => state.city.cities); // Récupération des villes depuis Redux
-    const loading = useSelector((state: RootState) => state.city.loading); // État de chargement
-    const error = useSelector((state: RootState) => state.city.error); // État d'erreur
+    const dispatch = useDispatch<AppDispatch>(); 
+    const cities = useSelector((state: RootState) => state.city.dbCities);
+    const loading = useSelector((state: RootState) => state.city.loading); 
+    const error = useSelector((state: RootState) => state.city.error);
     const [inputValue, setInputValue] = useState<string>('');
-    const router = useRouter()
     const handleInputChange = (value: string) => {
         setInputValue(value);
     };
 
     useEffect(() => {
         if (inputValue) {
-            dispatch(fetchCities(inputValue));
+            dispatch(fetchDbCities(inputValue));
         }
     }, [inputValue, dispatch]);
 
-    const handleCityChange = (selectedOption: City | null) => {
-        dispatch(setSelectedCity(selectedOption)); // Met à jour la ville sélectionnée dans Redux
+    const handleCityChange = (selectedOption: DbCity | null) => {
+        dispatch(setDbCity(selectedOption));
         if (selectedOption) {
             console.log('Ville sélectionnée:', selectedOption);
         }

@@ -2,10 +2,13 @@ import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { geoUserName } from '@/helpers/constants'
 import { City, CityState } from '@/helpers/types'
 import axios from 'axios'
+import { RootState } from "../store";
 
 const initialState: CityState = {
     cities: [],
     selectedCity: null,
+    dbCities: [],
+    dbCity: null,
     pays: '',
     loading: false,
     error: null,
@@ -34,6 +37,15 @@ export const fetchCities = createAsyncThunk<City[], string>(
     }
 );
 
+export const fetchDbCities = createAsyncThunk("", async (inputValue: string) => {
+    try {
+        const response = await axios.get(`http://localhost:4000/loation?q=${inputValue}`)
+    return response.data
+    } catch (error: any) {
+        throw new Error("Error: ", error)
+    }
+})
+
 
 const citySlice = createSlice({
     name: 'cities',
@@ -43,6 +55,9 @@ const citySlice = createSlice({
             state.selectedCity = action.payload;
             state.pays = action.payload.country;
         },
+        setDbCity(state, action: PayloadAction<any>) {
+            state.dbCity = action.payload;
+        }
     },
     extraReducers: (builder) => {
         builder
@@ -56,9 +71,24 @@ const citySlice = createSlice({
             .addCase(fetchCities.rejected, (state, action: PayloadAction<any>) => {
                 state.loading = false;
                 state.error = action.payload || null;
+            })
+
+            .addCase(fetchDbCities.pending, (state) => {
+                state.loading = true;
+            })
+            .addCase(fetchDbCities.fulfilled, (state, action: PayloadAction<any>) => {
+                state.loading = false;
+                state.dbCities = action.payload;
+            })
+            .addCase(fetchDbCities.rejected, (state, action: PayloadAction<any>) => {
+                state.loading = false;
+                state.error = action.payload || null;
             });
     },
 });
 
-export const { setSelectedCity } = citySlice.actions;
+export const selectSelectedCity = (state: RootState) => state.city.selectedCity
+export const selectDbCity = (state: RootState) => state.city.dbCity
+
+export const { setSelectedCity, setDbCity } = citySlice.actions;
 export default citySlice.reducer;

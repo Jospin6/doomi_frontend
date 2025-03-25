@@ -1,5 +1,5 @@
 interface City {
-    value: number;
+    value?: number | null;
     label: string;
     ville: string;
     pays: string;
@@ -8,10 +8,20 @@ interface City {
     countryCode: string
 }
 
+export interface DbCity {
+    id?: string;
+    country: string;
+    city: string;
+    latitude?: string;
+    longitude?: string;
+}
+
 interface CityState {
-    cities: City[];
-    selectedCity: City | null;
-    pays: string;
+    cities?: City[];
+    dbCities: DbCity[];
+    selectedCity?: City | null;
+    dbCity: DbCity | null;
+    pays?: string;
     loading: boolean;
     error: string | null;
 }
