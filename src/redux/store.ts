@@ -8,6 +8,7 @@ import businessProfileReducer from './businessProfile/businessProfileSlice'
 import favoriteReducer from './favorite/favoriteSlice'
 import subscriptionReducer from './subscription/subscriptionSlice'
 import boostReducer from './boost/boostSlice'
+import messagingReducer from './message/messagingSlice'
 
 export const store = configureStore({
     reducer: {
@@ -19,7 +20,8 @@ export const store = configureStore({
         favorite: favoriteReducer,
         businessProfile: businessProfileReducer,
         subscription: subscriptionReducer,
-        boosts: boostReducer
+        boosts: boostReducer,
+        messaging: messagingReducer
     }
 })
 
