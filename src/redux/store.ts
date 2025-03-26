@@ -3,6 +3,7 @@ import cityReducer from './cities/citySlice'
 import authReducer from './auth/authSlice'
 import categoryReducer from "./category/categorySlice"
 import subCategoryReducer from "./subCategory/subCategorySlice"
+import listingReducer from './listing/listingSlice'
 
 export const store = configureStore({
     reducer: {
@@ -10,7 +11,7 @@ export const store = configureStore({
         auth: authReducer,
         category: categoryReducer,
         subCategory: subCategoryReducer,
-        
+        listing: listingReducer
     }
 })
 
