@@ -1,10 +1,11 @@
 import axios from "axios";
 import {Listing} from "./listingSlice"
+import { baseUrl } from "@/helpers/constants";
 
-const API_URL = "/api/listings"; // Assurez-vous que l'URL est correcte
+const API_URL = `${baseUrl}/listings`;
 
 interface ListingService {
-    fetchListings(): Promise<any>;
+    fetchListings(locationId?: string): Promise<any>;
     fetchListingById(id: string): Promise<any>;
     createListing(data: {
         title: string;
@@ -15,7 +16,7 @@ interface ListingService {
         subCategoryId: string;
         locationId?: string;
         extraFields?: any;
-        images: string[];
+        images: File[];
         status?: string;
     }): Promise<any>;
     updateListing(id: string, data:Partial<Listing>): Promise<any>;
@@ -23,8 +24,8 @@ interface ListingService {
 }
 
 export const listingService: ListingService = {
-    async fetchListings() {
-        const response = await axios.get(API_URL);
+    async fetchListings(locationId?: string) {
+        const response = await axios.get(`${API_URL}?locationId=${locationId}`);
         return response.data;
     },
 
@@ -42,7 +43,7 @@ export const listingService: ListingService = {
         subCategoryId: string;
         locationId?: string;
         extraFields?: any;
-        images: string[];
+        images: File[];
         status?: string;
     }) {
         const response = await axios.post(API_URL, data);

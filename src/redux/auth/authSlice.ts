@@ -1,15 +1,8 @@
-import { City } from "@/helpers/types";
+import { City, User } from "@/helpers/types";
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import axios from "axios";
 import { RootState } from "../store";
 import { deleteCookie, getCookie, setCookie } from "cookies-next";
-
-
-interface User {
-    id: string;
-    name: string;
-    email: string;
-}
 
 interface initialStateProps {
     acoountType: "PERSONAL" | "BUSINESS" | null

@@ -12,7 +12,7 @@ const listingSchema = z.object({
   price: z.number().min(0, "Le prix doit être supérieur ou égal à 0"),
   currency: z.string().min(1, "La devise est requise"),
   subCategoryId: z.string().min(1, "La sous-catégorie est requise"),
-  images: z.array(z.string().url("Chaque URL d'image doit être valide")),
+  images: z.array(z.instanceof(File)),
   locationId: z.string().optional(),
   extraFields: z.unknown().optional(),
 });
@@ -33,6 +33,7 @@ const ListingForm: React.FC<ListingFormProps> = ({ listingId, defaultValues, onS
 
   const {
     register,
+    setValue,
     handleSubmit,
     formState: { errors },
     reset,
@@ -51,7 +52,7 @@ const ListingForm: React.FC<ListingFormProps> = ({ listingId, defaultValues, onS
     if (listingId) {
       await dispatch(updateListing({ id: listingId, data }));
     } else {
-      await dispatch(createListing({...data, userId: "userId"}));
+      await dispatch(createListing({ ...data, userId: "userId" }));
     }
     if (onSuccess) onSuccess();
   };
@@ -117,8 +118,12 @@ const ListingForm: React.FC<ListingFormProps> = ({ listingId, defaultValues, onS
       <div>
         <label className="block text-sm font-medium text-gray-700">Images</label>
         <input
-          type="text"
-          {...register("images")}
+          type="file"
+          multiple
+          onChange={(e) => {
+            const files = Array.from(e.target.files || []);
+            setValue("images", files);
+          }}
           className="mt-1 p-2 w-full border rounded-md"
           placeholder="URL de l'image (séparées par des virgules)"
         />

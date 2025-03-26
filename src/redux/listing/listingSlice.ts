@@ -1,7 +1,23 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { listingService } from "./listingService";
+import { RootState } from "../store";
 
 export interface Listing {
+  id: string;
+  title: string;
+  description: string;
+  price: number;
+  currency: string;
+  userId: string;
+  subCategoryId: string;
+  locationId?: string;
+  extraFields?: any;
+  images: File[];
+  status: string;
+  createdAt: string;
+}
+
+export interface ListingDB {
   id: string;
   title: string;
   description: string;
@@ -17,7 +33,7 @@ export interface Listing {
 }
 
 interface ListingState {
-  listings: Listing[];
+  listings: ListingDB[];
   selectedListing?: Listing | null;
   loading: boolean;
   error: string | null;
@@ -31,11 +47,11 @@ const initialState: ListingState = {
 };
 
 // Thunks
-export const fetchListings = createAsyncThunk("listings/fetchAll", async (_, thunkAPI) => {
+export const fetchListings = createAsyncThunk("listings/fetchAll", async (locationId?: string) => {
   try {
-    return await listingService.fetchListings();
+    return await listingService.fetchListings(locationId);
   } catch (error: any) {
-    return thunkAPI.rejectWithValue(error.response?.data?.message || "Failed to fetch listings");
+    throw new Error(error.response?.data?.message || "Failed to fetch listings");
   }
 });
 
@@ -59,7 +75,7 @@ export const createListing = createAsyncThunk(
       subCategoryId: string;
       locationId?: string;
       extraFields?: any;
-      images: string[];
+      images: File[];
       status?: string;
     },
     thunkAPI
@@ -105,7 +121,7 @@ const listingSlice = createSlice({
         state.loading = true;
         state.error = null;
       })
-      .addCase(fetchListings.fulfilled, (state, action: PayloadAction<Listing[]>) => {
+      .addCase(fetchListings.fulfilled, (state, action: PayloadAction<ListingDB[]>) => {
         state.loading = false;
         state.listings = action.payload;
       })
@@ -129,10 +145,6 @@ const listingSlice = createSlice({
         state.loading = true;
         state.error = null;
       })
-      .addCase(createListing.fulfilled, (state, action: PayloadAction<Listing>) => {
-        state.loading = false;
-        state.listings.push(action.payload);
-      })
       .addCase(createListing.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
@@ -140,12 +152,6 @@ const listingSlice = createSlice({
       .addCase(updateListing.pending, (state) => {
         state.loading = true;
         state.error = null;
-      })
-      .addCase(updateListing.fulfilled, (state, action: PayloadAction<Listing>) => {
-        state.loading = false;
-        state.listings = state.listings.map((listing) =>
-          listing.id === action.payload.id ? action.payload : listing
-        );
       })
       .addCase(updateListing.rejected, (state, action) => {
         state.loading = false;
@@ -165,6 +171,8 @@ const listingSlice = createSlice({
       });
   },
 });
+
+export const selectListings = (state: RootState) => state.listing.listings
 
 export const { clearSelectedListing } = listingSlice.actions;
 export default listingSlice.reducer;

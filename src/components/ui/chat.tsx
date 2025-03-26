@@ -4,23 +4,24 @@ import { useSelector, useDispatch } from 'react-redux';
 import { fetchConversations, sendMessage } from '@/redux/message/messagingSlice';
 import { RootState } from '@/redux/store';
 import { AppDispatch } from '@/redux/store';
+import { useCurrentUser } from '@/hooks/useCurrentUser';
 
 const Chat = () => {
   const dispatch = useDispatch<AppDispatch>();
   const { conversations, selectedConversation, status } = useSelector((state: RootState) => state.messaging);
   const [message, setMessage] = useState('');
-  const [userId] = useState('user-123'); // Simule un utilisateur connecté
+  const user = useCurrentUser()
 
   useEffect(() => {
-    dispatch(fetchConversations(userId));
-  }, [dispatch, userId]);
+    dispatch(fetchConversations(user!.id!));
+  }, [dispatch, user]);
 
   const handleSendMessage = () => {
     if (selectedConversation && message.trim()) {
       dispatch(sendMessage({
         conversationId: selectedConversation.id,
         message,
-        senderId: userId,
+        senderId: user!.id!,
       }));
       setMessage('');
     }
@@ -53,7 +54,7 @@ const Chat = () => {
             <div className="p-4 border-b text-lg font-bold">{selectedConversation.name || 'Chat'}</div>
             <div className="flex-1 p-4 overflow-y-auto">
               {selectedConversation.messages.map((msg) => (
-                <div key={msg.id} className={`mb-2 p-2 rounded ${msg.senderId === userId ? 'bg-blue-200 self-end' : 'bg-gray-200'}`}>
+                <div key={msg.id} className={`mb-2 p-2 rounded ${msg.senderId === user!.id! ? 'bg-blue-200 self-end' : 'bg-gray-200'}`}>
                   {msg.content}
                 </div>
               ))}
