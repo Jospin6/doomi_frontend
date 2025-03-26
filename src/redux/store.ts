@@ -4,6 +4,7 @@ import authReducer from './auth/authSlice'
 import categoryReducer from "./category/categorySlice"
 import subCategoryReducer from "./subCategory/subCategorySlice"
 import listingReducer from './listing/listingSlice'
+import favoriteReducer from './favorite/favoriteSlice'
 
 export const store = configureStore({
     reducer: {
@@ -11,7 +12,8 @@ export const store = configureStore({
         auth: authReducer,
         category: categoryReducer,
         subCategory: subCategoryReducer,
-        listing: listingReducer
+        listing: listingReducer,
+        favorite: favoriteReducer
     }
 })
 
