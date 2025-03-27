@@ -1,3 +1,4 @@
+"use client"
 import { Navbar } from "@/components/navbar/navbar";
 import { Card } from "@/components/ui/card";
 import { fetchListings, selectListings } from "@/redux/listing/listingSlice";

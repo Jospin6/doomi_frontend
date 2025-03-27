@@ -2,9 +2,9 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 import {store} from '../store';
-import { baseUrl } from '@/helpers/constants';
+import { baseUrl, webSocketUrl } from '@/helpers/constants';
 
-const socket = new WebSocket(baseUrl);
+const socket = new WebSocket(webSocketUrl);
 
 interface Message {
   id: string;
