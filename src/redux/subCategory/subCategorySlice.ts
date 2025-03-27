@@ -1,13 +1,14 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { subCategoryService } from "./subCategoryService";
+import { RootState } from "../store";
 
 interface SubCategory {
-    id: string;
+    id?: string;
     name: string;
-    images?: string[];
+    images?: string;
     description?: string;
-    categoryId: string;
-    createdAt: string;
+    categoryId?: string;
+    createdAt?: string;
 }
 
 interface SubCategoryState {
@@ -43,7 +44,7 @@ export const fetchSubCategoryById = createAsyncThunk("subCategories/fetchById", 
 
 export const createSubCategory = createAsyncThunk(
     "subCategories/create",
-    async (data: { name: string; images: string[]; description?: string; categoryId: string }, thunkAPI) => {
+    async (data: { name: string; images?: string; description?: string; categoryId: string }, thunkAPI) => {
         try {
             return await subCategoryService.createSubCategory(data);
         } catch (error: any) {
@@ -145,6 +146,8 @@ const subCategorySlice = createSlice({
             });
     },
 });
+
+export const selectSubCategories = (state: RootState) => state.subCategory.subCategories
 
 export const { clearSelectedSubCategory } = subCategorySlice.actions;
 export default subCategorySlice.reducer;

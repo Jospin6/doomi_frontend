@@ -1,10 +1,11 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { categoryService } from "./categoryService";
+import { RootState } from "../store";
 
 interface Category {
     id: string;
     name: string;
-    image: string;
+    image?: string;
     description?: string;
     createdAt: string;
 }
@@ -42,7 +43,7 @@ export const fetchCategoryById = createAsyncThunk("categories/fetchById", async 
 
 export const createCategory = createAsyncThunk(
     "categories/create",
-    async (data: { name: string; image: string; description?: string }, thunkAPI) => {
+    async (data: { name: string; image?: string; description?: string }, thunkAPI) => {
         try {
             return await categoryService.createCategory(data);
         } catch (error: any) {
@@ -144,6 +145,8 @@ const categorySlice = createSlice({
             });
     },
 });
+
+export const selectCategories = (state: RootState) => state.category.categories
 
 export const { clearSelectedCategory } = categorySlice.actions;
 export default categorySlice.reducer;

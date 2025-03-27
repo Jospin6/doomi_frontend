@@ -14,12 +14,12 @@ export const subCategoryService = {
         return response.data;
     },
 
-    async createSubCategory(data: { name: string; images: string[]; description?: string; categoryId: string }) {
+    async createSubCategory(data: { name: string; images?: string; description?: string; categoryId: string }) {
         const response = await axios.post(API_URL, data);
         return response.data;
     },
 
-    async updateSubCategory(id: string, data: { name?: string; images?: string[]; description?: string }) {
+    async updateSubCategory(id: string, data: { name?: string; images?: string; description?: string }) {
         const response = await axios.put(`${API_URL}/${id}`, data);
         return response.data;
     },

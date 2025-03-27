@@ -5,10 +5,11 @@ import { useEffect } from "react";
 import { createSubCategory, updateSubCategory } from "@/redux/subCategory/subCategorySlice";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/redux/store";
+import { fetchCategories } from "@/redux/category/categorySlice";
 
 const subCategorySchema = z.object({
   name: z.string().min(3, "Le nom doit contenir au moins 3 caractères"),
-  images: z.array(z.string().url("Chaque URL d'image doit être valide")),
+  images: z.string().optional(),
   description: z.string().optional(),
   categoryId: z.string().min(1, "La catégorie est requise"),
 });
@@ -37,18 +38,19 @@ const SubCategoryForm: React.FC<SubCategoryFormProps> = ({ subCategoryId, defaul
   });
 
   useEffect(() => {
+    dispatch(fetchCategories())
+  }, [])
+
+  useEffect(() => {
     if (defaultValues) {
       reset(defaultValues);
     }
   }, [defaultValues, reset]);
 
   const onSubmit = async (data: SubCategoryFormData) => {
-    if (subCategoryId) {
-      await dispatch(updateSubCategory({ id: subCategoryId, data }));
-    } else {
-      await dispatch(createSubCategory(data));
-    }
-    if (onSuccess) onSuccess();
+    console.log(data)
+    dispatch(createSubCategory(data));
+    reset()
   };
 
   return (

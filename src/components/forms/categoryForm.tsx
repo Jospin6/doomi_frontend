@@ -2,13 +2,13 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useEffect } from "react";
-import { createCategory, updateCategory } from "@/redux/category/categorySlice";
+import { createCategory, fetchCategories, selectCategories, updateCategory } from "@/redux/category/categorySlice";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/redux/store";
 
 const categorySchema = z.object({
   name: z.string().min(3, "Le nom doit contenir au moins 3 caractères"),
-  image: z.string().url("L'URL de l'image est invalide"),
+  image: z.string().optional(),
   description: z.string().optional(),
 });
 
@@ -41,12 +41,10 @@ const CategoryForm: React.FC<CategoryFormProps> = ({ categoryId, defaultValues, 
   }, [defaultValues, reset]);
 
   const onSubmit = async (data: CategoryFormData) => {
-    if (categoryId) {
-      await dispatch(updateCategory({ id: categoryId, data }));
-    } else {
-      await dispatch(createCategory(data));
-    }
+    dispatch(createCategory(data));
+    console.log(data)
     if (onSuccess) onSuccess();
+    reset()
   };
 
   return (

@@ -14,7 +14,7 @@ export const categoryService = {
         return response.data;
     },
 
-    async createCategory(data: { name: string; image: string; description?: string }) {
+    async createCategory(data: { name: string; image?: string; description?: string }) {
         const response = await axios.post(API_URL, data);
         return response.data;
     },
