@@ -2,8 +2,9 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 import {store} from '../store';
+import { baseUrl } from '@/helpers/constants';
 
-const socket = new WebSocket(process.env.NEXT_PUBLIC_WS_URL || 'ws://localhost:3001');
+const socket = new WebSocket(baseUrl);
 
 interface Message {
   id: string;
@@ -35,7 +36,7 @@ const initialState: MessagingState = {
 export const fetchConversations = createAsyncThunk(
   'messaging/fetchConversations',
   async (userId: string) => {
-    const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/conversations/user/${userId}`);
+    const response = await axios.get(`${baseUrl}/conversations/user/${userId}`);
     return response.data;
   }
 );

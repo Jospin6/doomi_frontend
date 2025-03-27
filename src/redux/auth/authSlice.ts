@@ -1,8 +1,9 @@
-import { City, User } from "@/helpers/types";
+import { User } from "@/helpers/types";
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import axios from "axios";
 import { RootState } from "../store";
 import { deleteCookie, getCookie, setCookie } from "cookies-next";
+import { baseUrl } from "@/helpers/constants";
 
 interface initialStateProps {
     acoountType: "PERSONAL" | "BUSINESS" | null
@@ -33,7 +34,7 @@ interface signinDataProps {
 
 export const signup = createAsyncThunk("auth/signup", async (signupData: signupDataProps) => {
     try {
-        const response = await axios.post("http://localhost:4000/auth/signup", signupData)
+        const response = await axios.post(`${baseUrl}/auth/signup`, signupData)
         const { access_token } = response.data;
         setCookie("access_token", access_token, {
             maxAge: 7 * 24 * 60 * 60, // 7 jours
@@ -49,7 +50,7 @@ export const signup = createAsyncThunk("auth/signup", async (signupData: signupD
 
 export const signin = createAsyncThunk("auth/signin", async (signinData: signinDataProps) => {
     try {
-        const response = await axios.post("http://localhost:4000/auth/signin", signinData)
+        const response = await axios.post(`${baseUrl}/auth/signin`, signinData)
         const { access_token } = response.data;
         setCookie("access_token", access_token, {
             maxAge: 7 * 24 * 60 * 60, // 7 jours
@@ -67,7 +68,7 @@ export const fetchCurrentUser = createAsyncThunk(
     "auth/fetchCurrentUser",
     async (_, { rejectWithValue }) => {
         try {
-            const response = await axios.get<User>("http://localhost:4000/auth/me", {
+            const response = await axios.get<User>(`${baseUrl}/auth/me`, {
                 headers: {
                     Authorization: `Bearer ${getCookie("access_token")}`,
                 },

@@ -2,7 +2,7 @@ import axios from "axios";
 import {Listing} from "./listingSlice"
 import { baseUrl } from "@/helpers/constants";
 
-const API_URL = `${baseUrl}/listings`;
+const API_URL = `${baseUrl}/listing`;
 
 interface ListingService {
     fetchListings(locationId?: string): Promise<any>;

@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import axios from "axios";
 import { RootState } from "../store";
+import { baseUrl } from "@/helpers/constants";
 
 // Types
 interface Boost {
@@ -32,7 +33,7 @@ export const fetchBoosts = createAsyncThunk<Boost[], string>(
   "boosts/fetch",
   async (listingId: string, { rejectWithValue }) => {
     try {
-      const response = await axios.get(`/api/boosts/${listingId}`);
+      const response = await axios.get(`${baseUrl}/boost/${listingId}`);
       return response.data;
     } catch (error: any) {
       return rejectWithValue(error.response?.data?.message || "Failed to fetch boosts");
@@ -44,7 +45,7 @@ export const createBoost = createAsyncThunk<Boost, Partial<Boost>>(
   "boosts/create",
   async (data, { rejectWithValue }) => {
     try {
-      const response = await axios.post(`/api/boosts`, data);
+      const response = await axios.post(`${baseUrl}/boost`, data);
       return response.data;
     } catch (error: any) {
       return rejectWithValue(error.response?.data?.message || "Failed to create boost");
@@ -56,7 +57,7 @@ export const updateBoost = createAsyncThunk<Boost, { id: string; data: Partial<B
   "boosts/update",
   async ({ id, data }, { rejectWithValue }) => {
     try {
-      const response = await axios.put(`/api/boosts/${id}`, data);
+      const response = await axios.put(`${baseUrl}/boost/${id}`, data);
       return response.data;
     } catch (error: any) {
       return rejectWithValue(error.response?.data?.message || "Failed to update boost");
@@ -68,7 +69,7 @@ export const deleteBoost = createAsyncThunk<string, string>(
   "boosts/delete",
   async (id: string, { rejectWithValue }) => {
     try {
-      await axios.delete(`/api/boosts/${id}`);
+      await axios.delete(`${baseUrl}/boost/${id}`);
       return id;
     } catch (error: any) {
       return rejectWithValue(error.response?.data?.message || "Failed to delete boost");

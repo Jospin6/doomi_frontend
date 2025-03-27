@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import axios from "axios";
 import { RootState } from "../store";
+import { baseUrl } from "@/helpers/constants";
 
 interface Subscription {
   id: string;
@@ -30,7 +31,7 @@ export const fetchSubscription = createAsyncThunk<Subscription, string>(
   "subscription/fetch",
   async (userId: string, { rejectWithValue }) => {
     try {
-      const response = await axios.get(`/api/subscription/${userId}`);
+      const response = await axios.get(`${baseUrl}/subscription/${userId}`);
       return response.data;
     } catch (error: any) {
       return rejectWithValue(error.response?.data?.message || "Failed to fetch subscription");
@@ -42,7 +43,7 @@ export const createSubscription = createAsyncThunk<Subscription, Partial<Subscri
   "subscription/create",
   async (data, { rejectWithValue }) => {
     try {
-      const response = await axios.post(`/api/subscription`, data);
+      const response = await axios.post(`${baseUrl}/subscription`, data);
       return response.data;
     } catch (error: any) {
       return rejectWithValue(error.response?.data?.message || "Failed to create subscription");
@@ -54,7 +55,7 @@ export const updateSubscription = createAsyncThunk<Subscription, { id: string; d
   "subscription/update",
   async ({ id, data }, { rejectWithValue }) => {
     try {
-      const response = await axios.put(`/api/subscription/${id}`, data);
+      const response = await axios.put(`${baseUrl}/subscription/${id}`, data);
       return response.data;
     } catch (error: any) {
       return rejectWithValue(error.response?.data?.message || "Failed to update subscription");
@@ -66,7 +67,7 @@ export const deleteSubscription = createAsyncThunk<string, string>(
   "subscription/delete",
   async (id: string, { rejectWithValue }) => {
     try {
-      await axios.delete(`/api/subscription/${id}`);
+      await axios.delete(`${baseUrl}/subscription/${id}`);
       return id;
     } catch (error: any) {
       return rejectWithValue(error.response?.data?.message || "Failed to delete subscription");

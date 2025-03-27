@@ -1,6 +1,7 @@
+import { baseUrl } from "@/helpers/constants";
 import axios from "axios";
 
-const API_URL = "/api/favorites"; // Assurez-vous que l'URL est correcte
+const API_URL = `${baseUrl}/favorite`;
 
 export const favoriteService = {
   async fetchFavorites(userId: string) {

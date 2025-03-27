@@ -1,6 +1,7 @@
+import { baseUrl } from "@/helpers/constants";
 import axios from "axios";
 
-const API_URL = "/api/categories"; // Assurez-vous que l'URL est correcte
+const API_URL = `${baseUrl}/category`;
 
 export const categoryService = {
     async fetchCategories() {

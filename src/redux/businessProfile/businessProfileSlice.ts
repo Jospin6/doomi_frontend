@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import axios from "axios";
 import { RootState } from "../store";
+import { baseUrl } from "@/helpers/constants";
 
 interface BusinessProfile {
   id: string;
@@ -31,7 +32,7 @@ export const fetchBusinessProfile = createAsyncThunk<BusinessProfile, string>(
   "businessProfile/fetch",
   async (userId: string, { rejectWithValue }) => {
     try {
-      const response = await axios.get(`/api/business-profile/${userId}`);
+      const response = await axios.get(`${baseUrl}/business-profile/${userId}`);
       return response.data;
     } catch (error: any) {
       return rejectWithValue(error.response?.data?.message || "Failed to fetch business profile");
@@ -43,7 +44,7 @@ export const createBusinessProfile = createAsyncThunk<BusinessProfile, Partial<B
   "businessProfile/create",
   async (data, { rejectWithValue }) => {
     try {
-      const response = await axios.post(`/api/business-profile`, data);
+      const response = await axios.post(`${baseUrl}/business-profile`, data);
       return response.data;
     } catch (error: any) {
       return rejectWithValue(error.response?.data?.message || "Failed to create business profile");
@@ -55,7 +56,7 @@ export const updateBusinessProfile = createAsyncThunk<BusinessProfile, { id: str
   "businessProfile/update",
   async ({ id, data }, { rejectWithValue }) => {
     try {
-      const response = await axios.put(`/api/business-profile/${id}`, data);
+      const response = await axios.put(`${baseUrl}/business-profile/${id}`, data);
       return response.data;
     } catch (error: any) {
       return rejectWithValue(error.response?.data?.message || "Failed to update business profile");
@@ -67,7 +68,7 @@ export const deleteBusinessProfile = createAsyncThunk<string, string>(
   "businessProfile/delete",
   async (id: string, { rejectWithValue }) => {
     try {
-      await axios.delete(`/api/business-profile/${id}`);
+      await axios.delete(`${baseUrl}/business-profile/${id}`);
       return id;
     } catch (error: any) {
       return rejectWithValue(error.response?.data?.message || "Failed to delete business profile");

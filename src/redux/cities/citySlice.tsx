@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { geoUserName } from '@/helpers/constants'
+import { baseUrl, geoUserName } from '@/helpers/constants'
 import { City, CityState, DbCity } from '@/helpers/types'
 import axios from 'axios'
 import { RootState } from "../store";
@@ -39,7 +39,7 @@ export const fetchCities = createAsyncThunk<City[], string>(
 
 export const fetchDbCities = createAsyncThunk("cities/fetchDbCities", async (inputValue: string) => {
     try {
-        const response = await axios.get(`http://localhost:4000/loation?q=${inputValue}`)
+        const response = await axios.get(`${baseUrl}/loation?q=${inputValue}`)
         return response.data
     } catch (error: any) {
         throw new Error("Error: ", error)
@@ -48,7 +48,7 @@ export const fetchDbCities = createAsyncThunk("cities/fetchDbCities", async (inp
 
 export const addLocation = createAsyncThunk("cities/addLocation", async (locationData: DbCity) => {
     try {
-        const response = await axios.post(`http://localhost:4000/loation`, locationData)
+        const response = await axios.post(`${baseUrl}/loation`, locationData)
         return response.data
     } catch (error: any) {
         throw new Error("Error: ", error)
@@ -57,7 +57,7 @@ export const addLocation = createAsyncThunk("cities/addLocation", async (locatio
 
 export const deleteLocation = createAsyncThunk("cities/deleteLocation", async (id: string) => {
     try {
-        const response = await axios.delete(`http://localhost:4000/loation/${id}`)
+        const response = await axios.delete(`${baseUrl}/loation/${id}`)
         return response.data
     } catch (error: any) {
         throw new Error("Error: ", error) 
