@@ -1,3 +1,4 @@
+"use client"
 import { Heart, Home, MessageCircle, Search, ShoppingBag, User } from "lucide-react"
 import {
     IoAddCircleOutline,
@@ -16,10 +17,12 @@ import {
 } from "react-icons/io5"
 import { NavbarItem } from "./navbarItem"
 import Link from "next/link"
+import { useCurrentUser } from "@/hooks/useCurrentUser"
 
 
 
 export const Navbar = () => {
+    const user = useCurrentUser()
     return (
         <div className="flex w-full justify-between border-b px-32 h-16 items-center">
             <div className="text-3xl font-semibold">doomi</div>
@@ -40,10 +43,18 @@ export const Navbar = () => {
                 </Link>
             </div>
             <div className="flex">
-                <NavbarItem icon={<IoHomeOutline size={20} />} label={"Home"} className="ml-4" />
-                <NavbarItem icon={<IoHeartOutline size={20} />} label={"Favoris"} className="ml-4" />
-                <NavbarItem icon={<IoChatboxOutline size={20} />} label={"Messages"} className="ml-4" />
-                <NavbarItem icon={<IoPersonOutline size={20} />} label={"Connexion"} className="ml-4" />
+                <Link href={"/"}>
+                    <NavbarItem icon={<IoHomeOutline size={20} />} label={"Home"} className="ml-4" />
+                </Link>
+                <Link href={"/favorite"}>
+                    <NavbarItem icon={<IoHeartOutline size={20} />} label={"Favoris"} className="ml-4" />
+                </Link>
+                <Link href={"/message"}>
+                    <NavbarItem icon={<IoChatboxOutline size={20} />} label={"Messages"} className="ml-4" />
+                </Link>
+                <Link href={user ? "/account": "/signin"}>
+                    <NavbarItem icon={<IoPersonOutline size={20} />} label={"Connexion"} className="ml-4" />
+                </Link>
             </div>
         </div>
     )

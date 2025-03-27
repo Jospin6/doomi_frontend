@@ -23,7 +23,7 @@ export default function AuthLayout({
                 <div className="h-full w-full bg-black/70 flex flex-col items-center justify-end pb-10">
                     <div className="text-white text-4xl font-semibold">
                         <div className="text-6xl font-bold">doomi</div>
-                        <div className="text-2xl font-light">Find your dream home</div>
+                        <div className="text-2xl font-light">Find your dream with us</div>
                     </div>
                 </div>
             </div>

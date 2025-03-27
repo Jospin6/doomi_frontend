@@ -13,11 +13,13 @@ const Chat = () => {
   const user = useCurrentUser()
 
   useEffect(() => {
-    dispatch(fetchConversations(user!.id!));
+    if (user) {
+      dispatch(fetchConversations(user.id!));
+    }
   }, [dispatch, user]);
 
   const handleSendMessage = () => {
-    if (selectedConversation && message.trim()) {
+    if (selectedConversation && message.trim() && user) {
       dispatch(sendMessage({
         conversationId: selectedConversation.id,
         message,

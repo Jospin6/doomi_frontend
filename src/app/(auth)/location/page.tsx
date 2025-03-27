@@ -4,13 +4,14 @@ import { fetchCities, fetchDbCities, setSelectedCity, selectDbCity, setDbCity } 
 import { AppDispatch, RootState } from "@/redux/store";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { IoArrowBack } from "react-icons/io5";
 import { useDispatch, useSelector } from "react-redux";
 import Select from 'react-select'
 
 export default function Location() {
-    const dispatch = useDispatch<AppDispatch>(); 
+    const dispatch = useDispatch<AppDispatch>();
     const cities = useSelector((state: RootState) => state.city.dbCities);
-    const loading = useSelector((state: RootState) => state.city.loading); 
+    const loading = useSelector((state: RootState) => state.city.loading);
     const error = useSelector((state: RootState) => state.city.error);
     const [inputValue, setInputValue] = useState<string>('');
     const handleInputChange = (value: string) => {
@@ -50,16 +51,23 @@ export default function Location() {
         }),
     };
 
-    return <div>
-        <Select
-            options={cities}
-            onChange={handleCityChange}
-            onInputChange={handleInputChange}
-            placeholder="Tapez le nom de votre ville..."
-            isClearable
-            isLoading={loading}
-            styles={customStyles}
-        />
-        {error && <p className="text-red-500">{error}</p>}
+    return <div className="h-screen">
+        <div className="text-3xl h-[80px] flex items-center pl-4 font-bold">
+            <IoArrowBack size={20} className="mr-3" />
+            <span>doomi</span>
+        </div>
+        <div className="w-8/12 m-auto ">
+            <h1 className="text-xl font-semibold mb-4">Choose your location</h1>
+            <Select
+                options={cities}
+                onChange={handleCityChange}
+                onInputChange={handleInputChange}
+                placeholder="Tapez le nom de votre ville..."
+                isClearable
+                isLoading={loading}
+                styles={customStyles}
+            />
+            {error && <p className="text-red-500">{error}</p>}
+        </div>
     </div>
 }

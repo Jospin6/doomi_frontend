@@ -10,6 +10,7 @@ import subscriptionReducer from './subscription/subscriptionSlice'
 import boostReducer from './boost/boostSlice'
 import messagingReducer from './message/messagingSlice'
 import userReducer from './user/userSlice'
+import websocketMiddleware from '@/middleware/websocketMiddleware'
 
 export const store = configureStore({
     reducer: {
@@ -24,7 +25,8 @@ export const store = configureStore({
         boosts: boostReducer,
         messaging: messagingReducer,
         user: userReducer
-    }
+    },
+    middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(websocketMiddleware),
 })
 
 export type RootState = ReturnType<typeof store.getState>

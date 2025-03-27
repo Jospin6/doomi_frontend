@@ -6,13 +6,15 @@ import { AppDispatch } from "@/redux/store";
 import Link from "next/link";
 import { IoArrowBack } from "react-icons/io5";
 import { useDispatch, useSelector } from "react-redux";
+import { redirect } from "next/navigation";
 
 export default function AccountType() {
     const dispatch = useDispatch<AppDispatch>()
     const accountType = useSelector(selectAcoountType)
 
-    const handleRadioChange = () => {
-        dispatch(setAcoountType({}))
+    const handleRadioChange = (newAccoutType: "PERSONAL" | "BUSINESS") => {
+        dispatch(setAcoountType(newAccoutType))
+        redirect("/location");
     }
 
     return <div className="h-screen">
@@ -22,7 +24,10 @@ export default function AccountType() {
                 <h1 className="text-xl font-semibold">Account type</h1>
                 <h4 className="text-[14px] text-gray-600 mb-3">Choose your account type</h4>
             </div>
-            <RadioGroup defaultValue={`${accountType}`} className="grid grid-cols-4 gap-6 w-full">
+            <RadioGroup 
+                defaultValue={`${accountType}`} 
+                onValueChange={(value: "PERSONAL" | "BUSINESS") => handleRadioChange(value)}
+                className="grid grid-cols-4 gap-6 w-full">
                 <div className="col-span-2 h-[100px] p-2 rounded-xl border border-gray-400">
                     <div className="flex items-center space-x-2">
                         <RadioGroupItem value="PERSONAL" id="option-one" />

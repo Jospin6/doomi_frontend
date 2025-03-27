@@ -74,11 +74,3 @@ const messagingSlice = createSlice({
 
 export const { sendMessage, receiveMessage } = messagingSlice.actions;
 export default messagingSlice.reducer;
-
-// Gestion de la réception des messages via WebSocket
-socket.onmessage = (event) => {
-  const messageData = JSON.parse(event.data);
-  if (messageData.event === 'receiveMessage') {
-    store.dispatch(receiveMessage(messageData.data));
-  }
-};
