@@ -37,9 +37,10 @@ export const fetchCities = createAsyncThunk<City[], string>(
     }
 );
 
-export const fetchDbCities = createAsyncThunk("cities/fetchDbCities", async (inputValue: string) => {
+export const fetchDbCities = createAsyncThunk("cities/fetchDbCities", async (inputValue?: string) => {
+    let url = inputValue ? `${baseUrl}/location?q=${inputValue}` : `${baseUrl}/location`
     try {
-        const response = await axios.get(`${baseUrl}/loation?q=${inputValue}`)
+        const response = await axios.get(url)
         return response.data
     } catch (error: any) {
         throw new Error("Error: ", error)
@@ -48,7 +49,7 @@ export const fetchDbCities = createAsyncThunk("cities/fetchDbCities", async (inp
 
 export const addLocation = createAsyncThunk("cities/addLocation", async (locationData: DbCity) => {
     try {
-        const response = await axios.post(`${baseUrl}/loation`, locationData)
+        const response = await axios.post(`${baseUrl}/location`, locationData)
         return response.data
     } catch (error: any) {
         throw new Error("Error: ", error)
@@ -57,7 +58,7 @@ export const addLocation = createAsyncThunk("cities/addLocation", async (locatio
 
 export const deleteLocation = createAsyncThunk("cities/deleteLocation", async (id: string) => {
     try {
-        const response = await axios.delete(`${baseUrl}/loation/${id}`)
+        const response = await axios.delete(`${baseUrl}/location/${id}`)
         return response.data
     } catch (error: any) {
         throw new Error("Error: ", error) 
@@ -107,6 +108,7 @@ const citySlice = createSlice({
 
 export const selectSelectedCity = (state: RootState) => state.city.selectedCity
 export const selectDbCity = (state: RootState) => state.city.dbCity
+export const selectDbCities = (state: RootState) => state.city.dbCities
 
 export const { setSelectedCity, setDbCity } = citySlice.actions;
 export default citySlice.reducer;
