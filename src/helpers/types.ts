@@ -27,21 +27,22 @@ export interface CityState {
 }
 
 export interface User {
-    id: string;
+    id?: string;
     name: string;
     email: string;
-    password: string;
+    password?: string;
+    sub?: string;
     phoneNumber?: string;
     address?: string;
     avatar?: string;
-    role: "USER" | "ADMIN"; // Assurez-vous que les valeurs correspondent à l'enum Role
-    profileType: "PERSONAL" | "BUSINESS"; // Assurez-vous que les valeurs correspondent à l'enum ProfileType
+    role?: "USER" | "ADMIN";
+    profileType: "PERSONAL" | "BUSINESS";
     businessProfile?: BusinessProfile;
     locationId?: string;
     location?: Location;
     businessProfileId?: string;
-    createdAt: string; // Date sous forme de string ISO
-    updatedAt: string;
+    createdAt?: string;
+    updatedAt?: string;
     Listing: Listing[];
     Subscription: Subscription[];
     Favorite: Favorite[];

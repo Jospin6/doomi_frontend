@@ -2,11 +2,13 @@
 import { City, DbCity } from "@/helpers/types";
 import { fetchCities, fetchDbCities, setSelectedCity, selectDbCity, setDbCity } from "@/redux/cities/citySlice";
 import { AppDispatch, RootState } from "@/redux/store";
+import { Console } from "console";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { IoArrowBack } from "react-icons/io5";
 import { useDispatch, useSelector } from "react-redux";
 import Select from 'react-select'
+import { redirect } from "next/navigation";
 
 export default function Location() {
     const dispatch = useDispatch<AppDispatch>();
@@ -18,36 +20,68 @@ export default function Location() {
         setInputValue(value);
     };
 
-    useEffect(() => {
-        if (inputValue) {
-            dispatch(fetchDbCities(inputValue));
-        }
-    }, [inputValue, dispatch]);
+    const cityOptions = cities.map((city) => ({
+        label: `${city.country} - ${city.city}`, 
+        value: city,
+    }));
 
-    const handleCityChange = (selectedOption: DbCity | null) => {
-        dispatch(setDbCity(selectedOption));
+    useEffect(() => {
+        dispatch(fetchDbCities(inputValue));
+    }, [dispatch]);
+
+    const handleChange = (selectedOption: any) => {
         if (selectedOption) {
-            console.log('Ville sélectionnée:', selectedOption);
+            dispatch(setDbCity(selectedOption.value));
+            redirect("/signup")
         }
     };
 
     const customStyles = {
-        control: (provided: any) => ({
+        control: (provided: any, state: any) => ({
             ...provided,
-            borderColor: 'lightgray',
-            boxShadow: 'none',
-            '&:hover': {
-                borderColor: 'blue',
+            borderColor: state.isFocused ? "#2563EB" : "lightgray", // Bleu au focus
+            boxShadow: state.isFocused ? "0 0 5px rgba(37, 99, 235, 0.5)" : "none",
+            borderWidth: "2px",
+            borderRadius: "8px",
+            padding: "4px",
+            transition: "all 0.3s ease-in-out",
+            "&:hover": {
+                borderColor: "#2563EB",
             },
         }),
         menu: (provided: any) => ({
             ...provided,
             zIndex: 9999,
+            borderRadius: "8px",
+            boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
+            overflow: "hidden",
         }),
         option: (provided: any, state: any) => ({
             ...provided,
-            backgroundColor: state.isSelected ? 'blue' : state.isFocused ? 'lightgray' : 'white',
-            color: state.isSelected ? 'white' : 'black',
+            backgroundColor: state.isSelected
+                ? "#2563EB"
+                : state.isFocused
+                    ? "#E0E7FF"
+                    : "white",
+            color: state.isSelected ? "white" : "#111827",
+            padding: "10px",
+            borderRadius: "4px",
+            transition: "all 0.2s ease-in-out",
+            cursor: "pointer",
+            "&:hover": {
+                backgroundColor: "#BFDBFE",
+            },
+        }),
+        placeholder: (provided: any) => ({
+            ...provided,
+            color: "#6B7280",
+            fontStyle: "italic",
+        }),
+        singleValue: (provided: any) => ({
+            ...provided,
+            color: "#111827", // S'assure que le texte est bien visible
+            fontWeight: "500",
+            fontSize: "16px",
         }),
     };
 
@@ -59,8 +93,8 @@ export default function Location() {
         <div className="w-8/12 m-auto ">
             <h1 className="text-xl font-semibold mb-4">Choose your location</h1>
             <Select
-                options={cities}
-                onChange={handleCityChange}
+                options={cityOptions}
+                onChange={handleChange}
                 onInputChange={handleInputChange}
                 placeholder="Tapez le nom de votre ville..."
                 isClearable

@@ -1,3 +1,4 @@
+"use client"
 import Link from "next/link";
 import { IoArrowBack } from "react-icons/io5";
 import { z } from "zod";
@@ -53,6 +54,10 @@ export default function Signup() {
     };
     return <div className="p-4">
         <div className="text-3xl font-bold flex items-center"><IoArrowBack size={20} className="mr-3" /> <span>doomi</span></div>
+        <div>
+            <div>account type: {userProfileType}</div>
+            <div>account type: {dbCity?.id!}</div>
+        </div>
         <div className="mt-6 w-8/12 m-auto">
             <div>
                 <h1 className="text-xl font-semibold">Wellcome to doomi</h1>

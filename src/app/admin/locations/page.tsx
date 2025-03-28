@@ -4,6 +4,7 @@ import { fetchDbCities, selectDbCities } from "@/redux/cities/citySlice";
 import { AppDispatch } from "@/redux/store";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { redirect } from "next/navigation";
 
 export default function Locations () {
     const dispatch = useDispatch<AppDispatch>()
@@ -12,6 +13,7 @@ export default function Locations () {
 
     useEffect(() => {
         dispatch(fetchDbCities())
+        redirect("/signup")
     }, [dispatch])
 
 

@@ -1,6 +1,7 @@
 "use client"
 import { Navbar } from "@/components/navbar/navbar";
 import { Card } from "@/components/ui/card";
+import { useCurrentUser } from "@/hooks/useCurrentUser";
 import { fetchListings, selectListings } from "@/redux/listing/listingSlice";
 import { AppDispatch } from "@/redux/store";
 import Image from "next/image";
@@ -10,6 +11,7 @@ import { useDispatch, useSelector } from "react-redux";
 export default function Home() {
   const listings = useSelector(selectListings)
   const dispatch = useDispatch<AppDispatch>()
+  const user = useCurrentUser()
 
   useEffect(() => {
     dispatch(fetchListings())
