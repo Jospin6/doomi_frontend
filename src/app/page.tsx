@@ -18,6 +18,7 @@ export default function Home() {
   }, [])
 
   return <>
+  {user?.sub}
     <div className="w-10/12 m-auto grid grid-cols-8 gap-4">
       {
         listings.map(listing => <Card key={listing.id} className="col-span-2">

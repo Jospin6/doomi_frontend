@@ -21,7 +21,7 @@ export interface ListingDB {
   id: string;
   title: string;
   description: string;
-  price: number;
+  price: string;
   currency: string;
   userId: string;
   subCategoryId: string;
@@ -69,7 +69,7 @@ export const createListing = createAsyncThunk(
     data: {
       title: string;
       description: string;
-      price: number;
+      price: string;
       currency: string;
       userId: string;
       subCategoryId: string;

@@ -10,7 +10,7 @@ interface ListingService {
     createListing(data: {
         title: string;
         description: string;
-        price: number;
+        price: string;
         currency: string;
         userId: string;
         subCategoryId: string;
@@ -37,7 +37,7 @@ export const listingService: ListingService = {
     async createListing(data: {
         title: string;
         description: string;
-        price: number;
+        price: string;
         currency: string;
         userId: string;
         subCategoryId: string;

@@ -1,3 +1,4 @@
+"use client"
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -5,11 +6,14 @@ import { useEffect, useState } from "react";
 import { createListing, updateListing } from "@/redux/listing/listingSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/redux/store";
+import { useCurrentUser } from "@/hooks/useCurrentUser";
+import { fetchSubCategories } from "@/redux/subCategory/subCategorySlice";
+import { fetchDbCities } from "@/redux/cities/citySlice";
 
 const listingSchema = z.object({
   title: z.string().min(3, "Le titre doit contenir au moins 3 caractères"),
   description: z.string().min(10, "La description doit contenir au moins 10 caractères"),
-  price: z.number().min(0, "Le prix doit être supérieur ou égal à 0"),
+  price: z.string().min(0, "Le prix doit être supérieur ou égal à 0"),
   currency: z.string().min(1, "La devise est requise"),
   subCategoryId: z.string().min(1, "La sous-catégorie est requise"),
   images: z.array(z.instanceof(File)),
@@ -28,8 +32,9 @@ interface ListingFormProps {
 const ListingForm: React.FC<ListingFormProps> = ({ listingId, defaultValues, onSuccess }) => {
   const dispatch = useDispatch<AppDispatch>();
   const { loading, error } = useSelector((state: RootState) => state.listing);
-  const { subCategories } = useSelector((state: RootState) => state.subCategory); // Pour récupérer les sous-catégories
-  const { dbCities } = useSelector((state: RootState) => state.city); // Pour récupérer les locations si nécessaire
+  const { subCategories } = useSelector((state: RootState) => state.subCategory);
+  const { dbCities } = useSelector((state: RootState) => state.city);
+  const user = useCurrentUser()
 
   const {
     register,
@@ -42,19 +47,18 @@ const ListingForm: React.FC<ListingFormProps> = ({ listingId, defaultValues, onS
     defaultValues,
   });
 
+
   useEffect(() => {
-    if (defaultValues) {
-      reset(defaultValues);
-    }
-  }, [defaultValues, reset]);
+    dispatch(fetchSubCategories())
+    dispatch(fetchDbCities())
+  }, [dispatch])
+  
 
   const onSubmit = async (data: ListingFormData) => {
-    if (listingId) {
-      await dispatch(updateListing({ id: listingId, data }));
-    } else {
-      await dispatch(createListing({ ...data, userId: "userId" }));
+    if (user) {
+      dispatch(createListing({ ...data, userId: user.sub! }));
+      reset() 
     }
-    if (onSuccess) onSuccess();
   };
 
   return (
@@ -150,7 +154,7 @@ const ListingForm: React.FC<ListingFormProps> = ({ listingId, defaultValues, onS
         className="w-full p-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition"
         disabled={loading}
       >
-        {loading ? "Enregistrement..." : listingId ? "Mettre à jour" : "Ajouter"}
+        Ajouter
       </button>
     </form>
   );
