@@ -1,30 +1,35 @@
-import { prisma } from '@/lib/prisma';
+'use client';
+
+import { useEffect } from 'react';
+import { useCategoryStore } from '@/stores/useCategoryStore';
 import CategoryForm from '@/components/categories/CategoryForm';
 
-const EditCategoryPage = async ({ params }: { params: { categoryId: string } }) => {
-  // Fetch the specific category to edit
-  const category = await prisma.category.findUnique({
-    where: {
-      id: params.categoryId,
-    },
-  });
+const EditCategoryPage = ({ params }: { params: { categoryId: string } }) => {
+  const {
+    categories,
+    fetchCategories,
+    isLoading,
+  } = useCategoryStore();
 
-  // Fetch all categories for the parent dropdown
-  const categories = await prisma.category.findMany({
-    where: {
-      // Exclude the current category from the list of potential parents
-      id: {
-        not: params.categoryId,
-      },
-    },
-    orderBy: {
-      name: 'asc',
-    },
-  });
+  useEffect(() => {
+    if (categories.length === 0) {
+      fetchCategories();
+    }
+  }, [fetchCategories, categories.length]);
+
+  const category = categories.find((c) => c.id === params.categoryId);
+
+  if (isLoading) {
+    return <div className="container mx-auto py-10">Loading...</div>;
+  }
+
+  if (!category) {
+    return <div className="container mx-auto py-10">Category not found.</div>;
+  }
 
   return (
     <div className="container mx-auto py-10">
-      <CategoryForm initialData={category} categories={categories} />
+      <CategoryForm initialData={category} />
     </div>
   );
 };

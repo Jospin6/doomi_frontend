@@ -6,6 +6,8 @@ import * as z from 'zod';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import { useCategoryStore } from '@/stores/useCategoryStore';
+import { useProductStore } from '@/stores/useProductStore';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -40,30 +42,23 @@ const formSchema = z.object({
   images: z.array(z.string()).min(1, 'At least one image is required.'),
 });
 
-// Define the Category type based on your Prisma schema
-interface Category {
-  id: string;
-  name: string;
-  // Add other fields if needed for display, e.g., parentId
-}
+
 
 const ProductForm = () => {
   const router = useRouter();
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const {
+    categories,
+    fetchCategories,
+    isLoading: isLoadingCategories,
+  } = useCategoryStore();
+  const { addProduct, isLoading: isSubmitting } = useProductStore();
 
   useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const response = await axios.get('/api/categories');
-        setCategories(response.data);
-      } catch (error) {
-        console.error('Failed to fetch categories', error);
-        // Optionally, show a toast notification
-      }
-    };
-    fetchCategories();
-  }, []);
+    // Fetch categories only if they are not already in the store
+    if (categories.length === 0) {
+      fetchCategories();
+    }
+  }, [fetchCategories, categories.length]);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -79,17 +74,16 @@ const ProductForm = () => {
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    setIsLoading(true);
     try {
-      await axios.post('/api/products', values);
-      router.push('/'); // Redirect to homepage on success
-      router.refresh();
-      // Optionally, show a success toast
+      const newProduct = await addProduct(values);
+      if (newProduct) {
+        router.push('/'); // Redirect to homepage on success
+        // No need for router.refresh() as the store is now the source of truth
+        // Optionally, show a success toast
+      }
     } catch (error) {
       console.error('Failed to create product', error);
-      // Optionally, show an error toast
-    } finally {
-      setIsLoading(false);
+      // The store handles the error state, but you could show a toast here
     }
   }
 
@@ -151,11 +145,17 @@ const ProductForm = () => {
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  {categories.map((category) => (
-                    <SelectItem key={category.id} value={category.id}>
-                      {category.name}
+                  {isLoadingCategories ? (
+                    <SelectItem value="loading" disabled>
+                      Loading categories...
                     </SelectItem>
-                  ))}
+                  ) : (
+                    categories.map((category) => (
+                      <SelectItem key={category.id} value={category.id}>
+                        {category.name}
+                      </SelectItem>
+                    ))
+                  )}
                 </SelectContent>
               </Select>
               <FormMessage />
@@ -208,8 +208,8 @@ const ProductForm = () => {
           )}
         />
 
-        <Button type="submit" disabled={isLoading}>
-          {isLoading ? 'Creating...' : 'Create Product'}
+        <Button type="submit" disabled={isSubmitting || isLoadingCategories}>
+          {isSubmitting ? 'Creating...' : 'Create Product'}
         </Button>
       </form>
     </Form>

@@ -5,7 +5,8 @@ import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useEffect } from 'react';
+import { useCategoryStore } from '@/stores/useCategoryStore';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -44,12 +45,24 @@ const formSchema = z.object({
 
 interface CategoryFormProps {
   initialData?: Category | null;
-  categories: Category[]; // For the parent category dropdown
 }
 
-const CategoryForm: React.FC<CategoryFormProps> = ({ initialData, categories }) => {
+const CategoryForm: React.FC<CategoryFormProps> = ({ initialData }) => {
   const router = useRouter();
-  const [isLoading, setIsLoading] = useState(false);
+  const {
+    categories,
+    fetchCategories,
+    addCategory,
+    updateCategory,
+    isLoading,
+    error,
+  } = useCategoryStore();
+
+  useEffect(() => {
+    if (categories.length === 0) {
+      fetchCategories();
+    }
+  }, [fetchCategories, categories.length]);
 
   const title = initialData ? 'Edit Category' : 'Create Category';
   const action = initialData ? 'Save changes' : 'Create';
@@ -64,23 +77,18 @@ const CategoryForm: React.FC<CategoryFormProps> = ({ initialData, categories }) 
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    setIsLoading(true);
     try {
       if (initialData) {
-        // Update existing category
-        await axios.put(`/api/categories/${initialData.id}`, values);
+        await updateCategory(initialData.id, values);
       } else {
-        // Create new category
-        await axios.post('/api/categories', values);
+        await addCategory(values as Omit<Category, 'id'>);
       }
-      router.refresh();
       router.push('/admin/categories'); // Redirect to the management page
+      // No need for router.refresh() as Zustand will update the UI
       // Optionally, show a success toast
-    } catch (error) {
-      console.error('Failed to save category', error);
-      // Optionally, show an error toast
-    } finally {
-      setIsLoading(false);
+    } catch (err) {
+      console.error('Failed to save category', err);
+      // The store handles the error state, but you can show a toast here
     }
   }
 
@@ -128,11 +136,13 @@ const CategoryForm: React.FC<CategoryFormProps> = ({ initialData, categories }) 
                 </FormControl>
                 <SelectContent>
                   <SelectItem value="">None</SelectItem>
-                  {categories.map((category) => (
-                    <SelectItem key={category.id} value={category.id}>
-                      {category.name}
-                    </SelectItem>
-                  ))}
+                  {categories
+                    .filter((c) => c.id !== initialData?.id) // Prevent self-parenting
+                    .map((category) => (
+                      <SelectItem key={category.id} value={category.id}>
+                        {category.name}
+                      </SelectItem>
+                    ))}
                 </SelectContent>
               </Select>
               <FormMessage />

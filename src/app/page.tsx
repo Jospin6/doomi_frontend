@@ -7,26 +7,30 @@ import { AuthButtons } from '@/components/auth/AuthButtons';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
+import ProductList from '@/components/products/ProductList';
 
 export default function Home() {
 
   return (
-    <main className="p-4">
-      <nav className="flex justify-end">
-        <AuthButtons />
-      </nav>
-      <div className="text-center mt-20">
-        <h1 className="text-4xl font-bold">Welcome to Doomi</h1>
-        <p className="mt-4">Your application's main content goes here.</p>
-        <div className="mt-8 flex justify-center gap-4">
+    <main className="container mx-auto p-4 py-8">
+      <header className="flex justify-between items-center mb-10">
+        <h1 className="text-4xl font-bold">Doomi Dashboard</h1>
+        <div className="flex items-center gap-4">
           <Link href="/products/new">
             <Button>Create Product</Button>
           </Link>
           <Link href="/admin/categories">
             <Button variant="secondary">Manage Categories</Button>
           </Link>
+          <div className="border-l h-8 border-gray-300 mx-2"></div>
+          <AuthButtons />
         </div>
-      </div>
+      </header>
+      
+      <section>
+        <h2 className="text-3xl font-bold mb-6">Product Catalog</h2>
+        <ProductList />
+      </section>
     </main>
   );
 }

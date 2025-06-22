@@ -1,16 +1,11 @@
-import { prisma } from '@/lib/prisma';
+'use client';
+
 import CategoryClient from '@/components/categories/CategoryClient';
 
-const CategoriesPage = async () => {
-  const categories = await prisma.category.findMany({
-    orderBy: {
-      name: 'asc',
-    },
-  });
-
+const CategoriesPage = () => {
   return (
     <div className="container mx-auto py-10">
-      <CategoryClient categories={categories} />
+      <CategoryClient />
     </div>
   );
 };

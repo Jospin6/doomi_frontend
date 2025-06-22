@@ -1,9 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import axios from 'axios';
 import { Edit, Plus, Trash } from 'lucide-react';
+import { useCategoryStore } from '@/stores/useCategoryStore';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -27,25 +27,33 @@ import {
 } from '@/components/ui/alert-dialog';
 import { Category } from './CategoryForm'; // Re-using the Category type
 
-interface CategoryClientProps {
-  categories: Category[];
-}
 
-const CategoryClient: React.FC<CategoryClientProps> = ({ categories }) => {
+
+const CategoryClient: React.FC = () => {
   const router = useRouter();
-  const [isLoading, setIsLoading] = useState(false);
+  const {
+    categories,
+    isLoading,
+    error,
+    fetchCategories,
+    deleteCategory,
+  } = useCategoryStore();
+  const [isDeleting, setIsDeleting] = useState(false); // Local state for delete button
+
+  useEffect(() => {
+    fetchCategories();
+  }, [fetchCategories]);
 
   const onDelete = async (categoryId: string) => {
-    setIsLoading(true);
+    setIsDeleting(true);
     try {
-      await axios.delete(`/api/categories/${categoryId}`);
-      router.refresh();
-      // Optionally, show a success toast
-    } catch (error) {
-      console.error('Failed to delete category', error);
-      // Optionally, show an error toast
+      await deleteCategory(categoryId);
+      // No router.refresh() needed, Zustand handles state update
+    } catch (err) {
+      console.error('Failed to delete category', err);
+      // Optionally show an error toast
     } finally {
-      setIsLoading(false);
+      setIsDeleting(false);
     }
   };
 
@@ -81,7 +89,7 @@ const CategoryClient: React.FC<CategoryClientProps> = ({ categories }) => {
                   </Button>
                   <AlertDialog>
                     <AlertDialogTrigger asChild>
-                      <Button variant="ghost" size="icon" disabled={isLoading}>
+                      <Button variant="ghost" size="icon" disabled={isDeleting}>
                         <Trash className="h-4 w-4 text-red-500" />
                       </Button>
                     </AlertDialogTrigger>
@@ -97,10 +105,10 @@ const CategoryClient: React.FC<CategoryClientProps> = ({ categories }) => {
                         <AlertDialogCancel>Cancel</AlertDialogCancel>
                         <AlertDialogAction
                           onClick={() => onDelete(category.id)}
-                          disabled={isLoading}
+                          disabled={isDeleting}
                           className="bg-red-500 hover:bg-red-600"
                         >
-                          {isLoading ? 'Deleting...' : 'Delete'}
+                          {isDeleting ? 'Deleting...' : 'Delete'}
                         </AlertDialogAction>
                       </AlertDialogFooter>
                     </AlertDialogContent>
