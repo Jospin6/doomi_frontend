@@ -1,32 +1,36 @@
-// app/api/upload/route.ts
-import { supabase } from '@/lib/supabase'
-import { NextRequest, NextResponse } from 'next/server'
+import { NextResponse } from 'next/server';
+import { supabase } from '@/lib/supabase';
 
-export async function POST(req: NextRequest) {
-  const formData = await req.formData()
-  const file = formData.get('file') as File
+export async function POST(req: Request) {
+  try {
+    const formData = await req.formData();
+    const file = formData.get('file') as File;
 
-  if (!file) {
-    return NextResponse.json({ error: 'No file uploaded' }, { status: 400 })
+    if (!file) {
+      return new NextResponse('No file provided', { status: 400 });
+    }
+
+    const fileExt = file.name.split('.').pop();
+    const fileName = `${Math.random()}.${fileExt}`;
+    const filePath = `${fileName}`;
+
+    const { error } = await supabase.storage
+      .from('doomifiles') // Make sure this bucket exists in your Supabase project
+      .upload(filePath, file);
+
+    if (error) {
+      console.error('Supabase upload error:', error);
+      return new NextResponse('Failed to upload file to Supabase', { status: 500 });
+    }
+
+    const { data } = supabase.storage
+      .from('doomifiles')
+      .getPublicUrl(filePath);
+
+    return NextResponse.json({ url: data.publicUrl });
+  } catch (error) {
+    console.error('[UPLOAD_POST]', error);
+    return new NextResponse('Internal error', { status: 500 });
   }
-
-  const filePath = `products/${Date.now()}-${file.name}`
-
-  // Upload to Supabase Storage
-  const { data, error } = await supabase.storage
-    .from('doomifiles')
-    .upload(filePath, file)
-
-  if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 })
-  }
-
-  // Get public URL
-  const { data: publicData } = supabase.storage
-    .from('doomifiles')
-    .getPublicUrl(filePath)
-
-  const imageUrl = publicData?.publicUrl
-
-  return NextResponse.json({ imageUrl })
 }
+

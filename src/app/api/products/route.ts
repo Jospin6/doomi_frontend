@@ -1,5 +1,8 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { Prisma } from '@prisma/client';
+import { getServerSession } from 'next-auth/next';
+import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 
 // GET all products
 export async function GET(request: Request) {
@@ -36,50 +39,84 @@ export async function GET(request: Request) {
 
 // POST a new product
 export async function POST(request: Request) {
+  const session = await getServerSession(authOptions);
+
+  if (!session?.user?.id) {
+    return NextResponse.json({ error: 'Unauthenticated' }, { status: 401 });
+  }
+
   try {
     const body = await request.json();
-    const { 
-        sellerId, 
-        name, 
-        description, 
-        categoryId, 
-        price, 
-        stockQuantity, 
-        sku, 
-        weight, 
-        height, 
-        width, 
-        depth 
+    const {
+      name,
+      description,
+      categoryId,
+      price,
+      stockQuantity,
+      sku,
+      weight,
+      height,
+      width,
+      depth,
+      images, // Array of strings (URLs)
     } = body;
 
-    if (!sellerId || !name || !categoryId || price === undefined || !sku) {
-      return NextResponse.json({ error: 'Missing required fields: sellerId, name, categoryId, price, sku' }, { status: 400 });
+    const seller = await prisma.seller.findUnique({
+      where: { userId: session.user.id },
+    });
+
+    if (!seller) {
+      return NextResponse.json(
+        { error: 'User is not a seller or seller profile not found.' },
+        { status: 403 }
+      );
     }
 
-    const newProduct = await prisma.product.create({
-      data: {
-        sellerId,
-        name,
-        description,
-        categoryId,
-        price,
-        stockQuantity,
-        sku,
-        weight,
-        height,
-        width,
-        depth,
-      },
+    if (!name || !categoryId || price === undefined || !sku || !images || !Array.isArray(images)) {
+      return NextResponse.json(
+        { error: 'Missing required fields: name, categoryId, price, sku, images' },
+        { status: 400 }
+      );
+    }
+
+    const newProduct = await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
+      const product = await tx.product.create({
+        data: {
+          sellerId: seller.id,
+          name,
+          description,
+          categoryId,
+          price,
+          stockQuantity,
+          sku,
+          weight,
+          height,
+          width,
+          depth,
+        },
+      });
+
+      if (images.length > 0) {
+        await tx.productImage.createMany({
+          data: images.map((imageUrl: string, index: number) => ({
+            productId: product.id,
+            url: imageUrl,
+            sortOrder: index,
+          })),
+        });
+      }
+
+      return product;
     });
 
     return NextResponse.json(newProduct, { status: 201 });
   } catch (error) {
     console.error('Error creating product:', error);
     if (error instanceof Error && 'code' in error && (error as any).code === 'P2002') {
-        return NextResponse.json({ error: 'A product with this SKU already exists' }, { status: 409 });
+      return NextResponse.json({ error: 'A product with this SKU already exists' }, { status: 409 });
     }
     if (error instanceof Error && 'code' in error && (error as any).code === 'P2025') {
-        return NextResponse.json({ error: 'Seller or Category not found' }, { status: 404 });
+      return NextResponse.json({ error: 'Seller or Category not found' }, { status: 404 });
     }
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
