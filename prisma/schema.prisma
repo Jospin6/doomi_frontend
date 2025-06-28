@@ -330,6 +330,51 @@ enum ShippingStatus {
   RETURNED
 }
 
+model Shipment {
+  id          String     @id @default(uuid())
+  order       Order      @relation(fields: [orderId], references: [id])
+  orderId     String
+  warehouse   Warehouse  @relation(fields: [warehouseId], references: [id])
+  warehouseId String
+  carrier     String     // "FedEx", "Colissimo", etc.
+  trackingNumber String?
+  status      ShipmentStatus @default(PROCESSING)
+  shippedAt   DateTime?
+  estimatedDelivery DateTime?
+  
+  // Relations
+  items       ShipmentItem[]
+  
+  @@index([orderId])
+  @@index([warehouseId])
+  @@index([trackingNumber])
+}
+
+enum ShipmentStatus {
+  PROCESSING
+  PACKED
+  SHIPPED
+  IN_TRANSIT
+  DELIVERED
+  RETURNED
+}
+
+model ShipmentItem {
+  id          String    @id @default(uuid())
+  shipment    Shipment  @relation(fields: [shipmentId], references: [id])
+  shipmentId  String
+  product     Product   @relation(fields: [productId], references: [id])
+  productId   String
+  variant     ProductVariant? @relation(fields: [variantId], references: [id])
+  variantId   String?
+  quantity    Int
+  
+  @@index([shipmentId])
+  @@index([productId])
+}
+
+
+
 model Billing {
   id          String      @id @default(uuid())
   order       Order       @relation(fields: [orderId], references: [id])
@@ -375,50 +420,6 @@ model Inventory {
   @@index([productId])
   @@index([warehouseId])
 }
-
-model Shipment {
-  id          String     @id @default(uuid())
-  order       Order      @relation(fields: [orderId], references: [id])
-  orderId     String
-  warehouse   Warehouse  @relation(fields: [warehouseId], references: [id])
-  warehouseId String
-  carrier     String     // "FedEx", "Colissimo", etc.
-  trackingNumber String?
-  status      ShipmentStatus @default(PROCESSING)
-  shippedAt   DateTime?
-  estimatedDelivery DateTime?
-  
-  // Relations
-  items       ShipmentItem[]
-  
-  @@index([orderId])
-  @@index([warehouseId])
-  @@index([trackingNumber])
-}
-
-enum ShipmentStatus {
-  PROCESSING
-  PACKED
-  SHIPPED
-  IN_TRANSIT
-  DELIVERED
-  RETURNED
-}
-
-model ShipmentItem {
-  id          String    @id @default(uuid())
-  shipment    Shipment  @relation(fields: [shipmentId], references: [id])
-  shipmentId  String
-  product     Product   @relation(fields: [productId], references: [id])
-  productId   String
-  variant     ProductVariant? @relation(fields: [variantId], references: [id])
-  variantId   String?
-  quantity    Int
-  
-  @@index([shipmentId])
-  @@index([productId])
-}
-
 
 
 model ProductDeposit {
