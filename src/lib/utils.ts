@@ -48,6 +48,15 @@ export function capitalize(text?: string): string {
 }
 
 export async function createUniqueSlug(name: string, productId: string) {
-  const baseSlug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+  const baseSlug = generateSlug(name);
   return `${baseSlug}-${productId.slice(0, 4)}`; // Ex: "chaise-gaming-a3b1"
 }
+
+export const generateSlug = (name: string) => {
+    return name
+      .toLowerCase()
+      .replace(/[éèêë]/g, 'e')
+      .replace(/[àäâ]/g, 'a')
+      .replace(/\s+/g, '-')
+      .replace(/[^a-z0-9-]/g, '');
+  };
